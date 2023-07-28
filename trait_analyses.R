@@ -12,6 +12,9 @@ library(ggeffects)
 data <- read_sheet("https://docs.google.com/spreadsheets/d/1jaxMxXIJAjN9hq9pF6PaG1_v6-3HE1K58bbUWnbNTIQ/edit#gid=413886912", sheet = "Trait Measurement", na = "NA") %>% 
   separate(id,into = c("population","rep"),remove=FALSE)
 
+germ <- read_sheet("https://docs.google.com/spreadsheets/d/1jaxMxXIJAjN9hq9pF6PaG1_v6-3HE1K58bbUWnbNTIQ/edit#gid=413886912", sheet = "germination data", na = "NA", "Copy of thinning!A1:G480" )
+
+all_data <- left_join(data, germ)
 
 # Data checking
 summary(data)
@@ -58,3 +61,17 @@ summary(m2)
 
 plot(ggeffect(m2, terms = c("length_largest_leaf_mm", "species")))
 
+#integrating germination date 
+
+ggplot(data=all_data,aes(y=germination_date,x=height_meristem_mm, fill=species))+
+  geom_point()
+
+ggplot(data=all_data,aes(x=germination_date,y=length_largest_leaf_mm, color=population))+
+  geom_point()+
+  geom_smooth(method = "lm") +
+  facet_wrap(.~species) 
+
+ggplot(data=all_data,aes(x=germination_date,y=height_meristem_mm, color=population))+
+  geom_point()+
+  geom_smooth(method = "lm") +
+  facet_wrap(.~species) 
